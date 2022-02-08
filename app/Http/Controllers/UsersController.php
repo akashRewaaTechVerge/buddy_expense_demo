@@ -2,39 +2,52 @@
 
 namespace App\Http\Controllers;
 use Illuminate\Http\Request;
-use DB;
+// use DB;
+use App\Models\User;
 // use Hash;
+use Exception;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\DB;
 
 class UsersController extends Controller
-{
+ {
 
     // --------------------- [ ' For login ' ] -------------------
-    public function login( request $request){  
+
+    public function login( request $request ) {
+
         try {
             $user = DB::table( 'users' )->where( 'email', $request->email )->get();
-            foreach ($user as $value) {
-            } 
-            if ( !$user || !Hash::check( $request->password, $value->password ) ) {
-                $response = array( 'status' => false, 'message' => 'credential Not Match..!!!' );
-                $seccess = json_encode( $response );
+
+            if ( count( $user ) == 1 ) {
+
+                foreach ( $user as $value ) {
+                }
+                if ( !$user || !Hash::check( $request->password, $value->password ) ) {
+                    $response = array( 'status' => false, 'message' => 'Password Not valid..!!!' );
+                    $seccess = json_encode( $response );
+                } else {
+                    $response = array( 'status' => true, 'message' => 'Login SuccessFully..!!!' );
+                    $seccess = json_encode( $response );
+                }
             } else {
-                $response = array( 'status' => true, 'message' => 'Login SuccessFully..!!!' );
+                $response = array( 'status' => false, 'message' => 'Email Not Valid..!!!' );
                 $seccess = json_encode( $response );
             }
             return $response;
-        }catch ( Exception $e ) {
+        } catch ( Exception $e ) {
             return false;
         }
         return $response;
     }
 
-    // --------------- [ 'For Regiter' ] ----------------
+    // --------------- [ 'For Regiter' ] ------------------
 
     public function register( Request $request ) {
 
         try {
             $data = DB::table( 'users' )->where( 'email', $request->email )->get();
+            ;
             if ( count( $data ) == 0 ) {
                 $user_password = Hash::make( $request->password );
                 $user = new User();
@@ -50,11 +63,15 @@ class UsersController extends Controller
                     $response = array( 'status' => false, 'message' => 'Register Faild..!!!' );
                     $seccess = json_encode( $response );
                 }
+            } else {
+                $response = array( 'status' => false, 'message' => 'Email Already Exit..!!!' );
+                $seccess = json_encode( $response );
+
             }
         } catch ( Exception $e ) {
             return false;
         }
-        return $response;
+        return $seccess;
 
     }
 

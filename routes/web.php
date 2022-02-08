@@ -19,5 +19,5 @@ $router->get('/', function () use ($router) {
 
 $router->group(['prefix' => 'api/v1'], function() use ($router){
     $router->get('/login', 'UsersController@login');
-     $router->get('/register', 'UsersController@register');
+    $router->get('/register', 'UsersController@register');
 });
